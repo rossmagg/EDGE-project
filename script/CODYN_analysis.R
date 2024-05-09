@@ -91,7 +91,7 @@ Rich_RC_drought<-ggplot(subset(drought_racave,Change.type=="richness_change"),ae
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 Rich_RC_drought
@@ -106,7 +106,7 @@ even_RC_drought<-ggplot(subset(drought_racave,Change.type=="evenness_change"),ae
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 even_RC_drought
@@ -121,7 +121,7 @@ rank_RC_drought<-ggplot(subset(drought_racave,Change.type=="rank_change"),aes(x=
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 rank_RC_drought
@@ -137,7 +137,7 @@ gains_RC_drought<-ggplot(subset(drought_racave,Change.type=="gains"),aes(x=Year.
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 gains_RC_drought
@@ -152,12 +152,40 @@ losses_RC_drought<-ggplot(subset(drought_racave,Change.type=="losses"),aes(x=Yea
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 losses_RC_drought
 
 ggsave(filename = "losses_RC_drought.jpeg", plot = losses_RC_drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
+
+## figure with average change ##
+
+racchangetrt.long_drought <- racchangetrt.long %>% dplyr::filter(Year.Year2 %in% c("2013.2014","2013.2015","2013.2016","2013.2017"))
+
+racave_ave<-racchangetrt.long_drought%>%
+  dplyr::group_by(Site,Trt,Change.type)%>%
+  dplyr::summarize(mean_change = mean(Value,na.rm=T), n = n(),sd = sd(Value,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = mean_change - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = mean_change + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+racave_ave$Trt <- factor(racave_ave$Trt, levels=c('con', 'chr', 'int'))
+
+
+#losses change drought 
+Drought_RACave_fig<-ggplot(racave_ave, aes(x=Site, y=mean_change,color=Trt))+
+  ylab("Mean change")+
+  xlab("Site")+
+  facet_wrap(~Change.type,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=4,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+Drought_RACave_fig
+ggsave(filename = "Drought_RACave_fig.jpeg", plot = Drought_RACave_fig, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
+
+
 
 ########### RAC change recovery compared to 2017 ##############
 sites<-unique(spcomp_long.final$Site)
@@ -208,7 +236,7 @@ Rich_RC17_recovery<-ggplot(subset(recovery_racave17,Change.type=="richness_chang
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 Rich_RC17_recovery
@@ -223,7 +251,7 @@ even_RC17_recovery<-ggplot(subset(recovery_racave17,Change.type=="evenness_chang
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 even_RC17_recovery
@@ -238,7 +266,7 @@ rank_RC17_recovery<-ggplot(subset(recovery_racave17,Change.type=="rank_change"),
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 rank_RC17_recovery
@@ -253,7 +281,7 @@ gains_RC17_recovery<-ggplot(subset(recovery_racave17,Change.type=="gains"),aes(x
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 gains_RC17_recovery
@@ -268,7 +296,7 @@ losses_RC17_recovery<-ggplot(subset(recovery_racave17,Change.type=="losses"),aes
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 losses_RC17_recovery
@@ -276,10 +304,69 @@ losses_RC17_recovery
 ggsave(filename = "losses_RC17_recovery.jpeg", plot = losses_RC17_recovery, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
 
 
+## figure with average change ##
+
+racchangetrt.long_recovery <- racchangetrt17.long %>% dplyr::filter(Year.Year2 %in% c("2017.2018","2017.2019","2017.2020","2017.2021"))
+
+racave_ave_recov<-racchangetrt.long_recovery%>%
+  dplyr::group_by(Site,Trt,Change.type)%>%
+  dplyr::summarize(mean_change = mean(Value,na.rm=T), n = n(),sd = sd(Value,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = mean_change - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = mean_change + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+
+racave_ave_recov$Trt <- factor(racave_ave$Trt, levels=c('con', 'chr', 'int'))
+
+
+#losses change recovery 
+Recovery_RACave_fig<-ggplot(racave_ave_recov, aes(x=Site, y=mean_change,color=Trt))+
+  ylab("Mean change")+
+  xlab("Site")+
+  facet_wrap(~Change.type,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=4,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+Recovery_RACave_fig
+
+ggsave(filename = "Recovery_RACave_fig.jpeg", plot = Drought_RACave_fig, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
+
+
+## figure with average change ##
+
+racchangetrt.long_drought <- racchangetrt.long %>% dplyr::filter(Year.Year2 %in% c("2013.2014","2013.2015","2013.2016","2013.2017"))
+
+racave_ave<-racchangetrt.long_drought%>%
+  dplyr::group_by(Site,Trt,Change.type)%>%
+  dplyr::summarize(mean_change = mean(Value,na.rm=T), n = n(),sd = sd(Value,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = mean_change - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = mean_change + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+racave_ave$Trt <- factor(racave_ave$Trt, levels=c('con', 'chr', 'int'))
+
+
+#losses change drought 
+Drought_RACave_fig<-ggplot(racave_ave, aes(x=Site, y=mean_change,color=Trt))+
+  ylab("Mean change")+
+  xlab("Site")+
+  facet_wrap(~Change.type,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=4,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+Drought_RACave_fig
+ggsave(filename = "Drought_RACave_fig.jpeg", plot = Drought_RACave_fig, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
+
+
+
+
 ######################################################################
 
 #using diff dataset for abundance. Just looking at C3/C4 
-comp_zeros <- read.csv("C:\\Users\\Maggie Ross\\OneDrive - Colostate\\EDGE\\data\\spcompdata_final_revised_April2022\\spcomp_zeros_trt.csv")
+comp_zeros <- read.csv("data/spcomp_zeros_trt.csv")
+
 comp_zeros$Species = NULL
 colnames(comp_zeros)[colnames(comp_zeros) == "max.cover"] <- "cover" 
 comp_zeros<- comp_zeros %>%
@@ -303,7 +390,7 @@ comp.wide_plot[is.na(comp.wide_plot)] <- 0
 comp.aveplot_zeros<- comp.wide_plot %>%
   pivot_longer(cols = "1":"30",names_to = "Plot", values_to = "avg.cover")
 
-trt <- read.csv("C:\\Users\\Maggie Ross\\OneDrive - Colostate\\EDGE\\data\\trt_info_2.csv")
+trt <- read.csv("data/trt_info_2.csv")
 trt<-trt %>% 
   dplyr::mutate_at(c('Site','Plot','Block','Trt'),as.factor)
 comp.aveplot_trt<- merge(trt,comp.aveplot_zeros, fix.by=c("Site", "Plot"))
@@ -414,27 +501,13 @@ C3_AC_Drought<-ggplot(subset(drought_ACave,Path=="C3"),aes(x=Year.Year2 , y=mean
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 C3_AC_Drought
 
 ggsave(filename = "C3_AC_Drought.jpeg", plot = C3_AC_Drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
 
-
-C3_AC_recov<-ggplot(subset(recovery_ACave,Path=="C3"),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pre-treatment")+
-  xlab("Years of Recovery")+
-  ggtitle("C3")+
-  facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
-  scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
-C3_AC_recov
-
-ggsave(filename = "C3_AC_recov.jpeg", plot = C3_AC_recov, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
 
 #C4
 C4_AC_Drought<-ggplot(subset(drought_ACave,Path=="C4"),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
@@ -444,7 +517,7 @@ C4_AC_Drought<-ggplot(subset(drought_ACave,Path=="C4"),aes(x=Year.Year2 , y=mean
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 C4_AC_Drought
@@ -452,19 +525,6 @@ C4_AC_Drought
 ggsave(filename = "C4_AC_Drought.jpeg", plot = C4_AC_Drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
 
 
-C4_AC_recov<-ggplot(subset(recovery_ACave,Path=="C4"),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pre-treatment")+
-  xlab("Years of Recovery")+
-  ggtitle("C4")+
-  facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
-  scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
-C4_AC_recov
-
-ggsave(filename = "C4_AC_recov.jpeg", plot = C4_AC_recov, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
 
 #### recovery change compared to 2017 ####
 
@@ -491,6 +551,7 @@ abunchngtrt17<-abunchng17 %>%
 
 #Create a new column showing the year comparisons
 abunchngtrt17$Year.Year2<-str_c(abunchngtrt17$Year,'-',abunchngtrt17$Year2)
+abunchngtrt17 <- abunchngtrt17 %>% dplyr::filter(Year.Year2 %in% c("2017-2018","2017-2019","2017-2020","2017-2021"))
 
 #Average and CI by time point comparison
 #can remove trt so that n=>1 for all spp, but then it's not super useful
@@ -501,10 +562,6 @@ abunchng.ave17<-abunchngtrt17%>%
                    UpperCI = mean_chng + qt(1 - (0.05 / 2), n - 1) * se)%>%
   as_tibble()
 
-
-recovery_ACave17 <- abunchng.ave17 %>% dplyr::filter(Year.Year2 %in% c("2017-2018","2017-2019","2017-2020","2017-2021"))
-
-
 C3_AC_recov17<-ggplot(subset(recovery_ACave17,Path=="C3"),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
   ylab("Change from end of treatment")+
   xlab("Years of Recovery")+
@@ -512,7 +569,7 @@ C3_AC_recov17<-ggplot(subset(recovery_ACave17,Path=="C3"),aes(x=Year.Year2 , y=m
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 C3_AC_recov17
@@ -527,12 +584,44 @@ C4_AC_recov17<-ggplot(subset(recovery_ACave17,Path=="C4"),aes(x=Year.Year2 , y=m
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 C4_AC_recov17
 
 ggsave(filename = "C4_AC_recov17.jpeg", plot = C4_AC_recov17, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
+
+## C3 and C4 aves not by year 
+
+abundchgave17_ave<-abunchngtrt17%>%
+  dplyr::group_by(Site,Trt,Path)%>%
+  dplyr::summarize(mean_change = mean(change,na.rm=T), n = n(),sd = sd(change,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = mean_change - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = mean_change + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+
+
+#losses change drought 
+recov_abundave_fig<-ggplot(abundchgave17_ave, aes(x=Site, y=mean_change,color=Trt))+
+  ylab("Mean change")+
+  xlab("Site")+
+  facet_wrap(~Path,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
+  #scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=4,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+recov_abundave_fig
+ggsave(filename = "recov_abundave_fig.jpeg", plot = recov_abundave_fig, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
+
+
+
+
+
+
+
+
+
 
 
 #### abund change by spp, not path ##### 
@@ -595,7 +684,7 @@ sppchange.SGS.drt<-ggplot(subset(drought_ACave.spp.SGS, Spcode %in% c('BOGR',"VU
   facet_wrap(~Spcode)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_bw()+theme(panel.grid.major = element_blank(),
                    panel.grid.minor = element_blank(), legend.position = "top",legend.title = element_blank(),
@@ -612,7 +701,7 @@ sppchange.SGS.rec<-ggplot(subset(recovery_ACave.spp.SGS, Spcode %in% c('BOGR',"V
   facet_wrap(~Spcode)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_bw()+theme(panel.grid.major = element_blank(),
                    panel.grid.minor = element_blank(), legend.position = "top",legend.title = element_blank(),
@@ -626,7 +715,7 @@ sppchange.CHY.drt<-ggplot(subset(drought_ACave.spp, Site=='CHY'),aes(x=Year.Year
   facet_wrap(~Spcode)+
   #scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 sppchange.CHY.drt
@@ -635,7 +724,7 @@ sppchange.HYS.drt<-ggplot(subset(drought_ACave.spp, Site=='HYS'),aes(x=Year.Year
   facet_wrap(~Spcode)+
   #scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, linewidth=1, show.legend = TRUE)+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 sppchange.HYS.drt
