@@ -32,9 +32,10 @@ spcomp_long.final.drt<- spcomp_long.final %>%
 
 spcomp_long.final.rec<- spcomp_long.final %>%
   dplyr::filter(Year %in% c(2017,2018,2019,2020,2021)) 
-### RAC CHANGE drought ###
 
-sites<-unique(spcomp_long.final$Site)
+### RAC CHANGE during drought; compared to 2013 ###
+
+sites<-unique(spcomp_long.final.drt$Site)
 racchange<-data.frame() #Make dataframe called racchange
 
 plotinfo<-spcomp_long.final.drt %>% 
@@ -207,12 +208,12 @@ RAC_abund_ave$Change.type <- factor(RAC_abund_ave$Change.type, levels=c('richnes
 
 #figure
 RAC_abund_drt_fig<-ggplot(RAC_abund_ave, aes(x=Site, y=mean_change,color=Trt))+
-  ylab("Overall change")+
+  ylab("Average change during drought")+
   xlab("Site")+
   facet_wrap(~Change.type, scales = "free", ncol = 2)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=3.5,position=position_dodge(.75))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.75), width=0, size=1.25, show.legend = TRUE)+
+  geom_point(size=3.5,position=position_dodge(.60))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.60), width=0, size=1.25, show.legend = TRUE)+
   scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
                         axis.text.y = element_text(size=12, color = "black"),
@@ -222,4 +223,112 @@ RAC_abund_drt_fig<-ggplot(RAC_abund_ave, aes(x=Site, y=mean_change,color=Trt))+
                         legend.position = "top",legend.text = element_text(size=11))
 RAC_abund_drt_fig
 ggsave(filename = "RAC_abund_drt_fig.pdf", plot = RAC_abund_drt_fig, bg = "transparent", width =  6, height = 9, units = "in", dpi = 600)
+
+########### Change during recovery; reference year 2017 ##############
+
+sites<-unique(spcomp_long.final.rec$Site)
+racchange.rec<-data.frame() #Make dataframe called racchange
+
+plotinfo<-spcomp_long.final.rec %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(Site,Plot,Trt,Block) %>% 
+  unique ()
+
+
+#need to put in console i=1 to test if it works
+for(i in 1:length(sites)){
+  sub<-spcomp_long.final.rec %>% 
+    filter(Site==sites[i])
+  out<-RAC_change(sub, time.var = "Year", species.var = "Spcode", 
+                  abundance.var = "avg.cover", replicate.var = "Plot", 
+                  reference.time = 2017)
+  out$Site<-sites[i]  
+  racchange.rec<-rbind(racchange.rec,out)
+}
+
+racchangetrt.rec<- merge(racchange, plotinfo, fix.by=c("Site","Plot"))
+
+#Create a new column showing the year comparisons
+racchangetrt.rec$Year.Year2<-str_c(racchangetrt.rec$Year,'.',racchangetrt.rec$Year2)
+
+racchangetrt.long.rec<-racchangetrt %>% gather(Change.type,Value, richness_change:losses)
+
+## abundance change 
+sites<-unique(comppath.plotsum.rec$Site)
+abunchng.rec<-data.frame() #Make dataframe called abunchng
+
+#Making a dataset with treatment info
+plotinfo<-comppath.plotsum.rec %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(Site,Plot, Trt) %>% 
+  unique()
+
+#need to put in console i=1 to test if it works
+for(i in 1:length(sites)){
+  sub<-comppath.plotsum.rec %>% 
+    filter(Site==sites[i])
+  out.rec<-abundance_change(
+    df=sub,
+    time.var="Year",
+    species.var="Path",
+    abundance.var="pathsum",
+    replicate.var = "Plot",
+    reference.time = "2017"
+  )
+  out.rec$Site<-sites[i]  
+  abunchng.rec<-rbind(abunchng.rec,out.rec)
+}
+
+#Merge dataframe with trt info
+abunchngtrt.rec<-abunchng.rec %>% 
+  left_join(plotinfo)
+
+#Create a new column showing the year comparisons
+abunchngtrt.rec$Year.Year2<-str_c(abunchngtrt.rec$Year,'-',abunchngtrt.rec$Year2)
+
+#rename columns so they match with racchange
+
+names(abunchngtrt.rec)[names(abunchngtrt.rec) == "Path"] <- "Change.type"
+names(abunchngtrt.rec)[names(abunchngtrt.rec) == "change"] <- "Value"
+racchangetrt.long.rec$Block <- NULL
+
+str(racchangetrt.long)
+
+#merge dfs 
+RAC_abund.rec <- rbind(racchangetrt.long.rec, abunchngtrt.rec)
+RAC_abund.rec$Change.type<-as.factor(RAC_abund.rec$Change.type)
+str(RAC_abund.rec)
+
+#calculate aves 
+
+RAC_abund_ave.rec<-RAC_abund.rec%>%
+  dplyr::group_by(Site,Trt,Change.type)%>%
+  dplyr::summarize(mean_change = mean(Value,na.rm=T), n = n(),sd = sd(Value,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = mean_change - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = mean_change + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+
+RAC_abund_ave.rec$Trt <- factor(RAC_abund_ave.rec$Trt, levels=c('con', 'chr', 'int'))
+RAC_abund_ave.rec$Change.type <- factor(RAC_abund_ave.rec$Change.type, levels=c('richness_change','evenness_change', 'rank_change',"gains","losses","C3","C4"), 
+                                    labels = c("Richness Chg.","Evenness Chg.","Reordering","Sp. Gains","Sp. Losses","C3 Abund. Chg.","C4 Abund. Chg."))
+
+#figure
+RAC_abund_drt_fig.rec<-ggplot(RAC_abund_ave.rec, aes(x=Site, y=mean_change,color=Trt))+
+  ylab("Average change during recovery")+
+  xlab("Site")+
+  facet_wrap(~Change.type, scales = "free", ncol = 2)+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3.5,position=position_dodge(.60))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.60), width=0, size=1.25, show.legend = TRUE)+
+  scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                        axis.text.y = element_text(size=12, color = "black"),
+                        strip.text = element_text(size=14),
+                        axis.title.x = element_text(size=14),
+                        axis.title.y = element_text(size=14),
+                        legend.position = "top",legend.text = element_text(size=11))
+RAC_abund_drt_fig.rec
+ggsave(filename = "RAC_abund_drt_fig.rec.pdf", plot = RAC_abund_drt_fig.rec, bg = "transparent", width =  6, height = 9, units = "in", dpi = 600)
+
+
 

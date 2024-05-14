@@ -177,13 +177,12 @@ Drought_RACave_fig<-ggplot(racave_ave, aes(x=Site, y=mean_change,color=Trt))+
   xlab("Site")+
   facet_wrap(~Change.type,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  geom_point(size=4,position=position_dodge(.45))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.45), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
   theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
 Drought_RACave_fig
 ggsave(filename = "Drought_RACave_fig.jpeg", plot = Drought_RACave_fig, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
-
 
 
 ########### RAC change recovery compared to 2017 ##############
@@ -644,8 +643,6 @@ ggsave(filename = "recov_abundave_fig.jpeg", plot = recov_abundave_fig, bg = "tr
 
 
 
-###### merge RAC change and Abund 
-#change datasets to easily combine into one figure
 
 
 
@@ -656,108 +653,3 @@ ggsave(filename = "recov_abundave_fig.jpeg", plot = recov_abundave_fig, bg = "tr
 
 
 
-
-#### abund change by spp, not path ##### 
-comp.species.simper <- comp.species %>% dplyr::filter(Spcode %in% c("BOGR","BRJA","BRTE","CAEL","HECO","KOMA","PASM","VUOC",
-                                                                    "ELEL","BOCU","ANGE","SCSC","SPAS","SONU","POPR",
-                                                                    "CAEL"))
-comp.species.simper$Trt <- factor(comp.species.simper$Trt, levels=c('con', 'chr', 'int'))
-comp.species.simper$Site <- factor(comp.species.simper$Site, levels=c('SGS', 'CHY', 'HYS','KNZ'))
-
-
-sites<-unique(comp.species.simper$Site)
-abunchng_allspp<-data.frame() #Make dataframe called abunchng
-
-#Making a dataset with treatment info
-plotinfo<-comp.species.simper %>% 
-  dplyr::ungroup() %>% 
-  dplyr::select(Site,Plot, Trt) %>% 
-  unique()
-
-#need to put in console i=1 to test if it works
-for(i in 1:length(sites)){
-  sub<-comp.species.simper%>% 
-    filter(Site==sites[i])
-  out<-abundance_change(
-    df=sub,
-    time.var="Year",
-    species.var="Spcode",
-    abundance.var="avg.cover",
-    replicate.var = "Plot",
-    reference.time = "2013"
-  )
-  out$Site<-sites[i]  
-  abunchng_allspp<-rbind(abunchng_allspp,out)
-}
-
-#Merge dataframe with trt info
-abunchng_allspp.trt<-abunchng_allspp %>% 
-  left_join(plotinfo)
-
-#Create a new column showing the year comparisons
-abunchng_allspp.trt$Year.Year2<-str_c(abunchng_allspp.trt$Year,'-',abunchng_allspp.trt$Year2)
-
-#Average and CI by time point comparison
-#can remove trt so that n=>1 for all spp, but then it's not super useful
-abunchng_allspp.ave<-abunchng_allspp.trt%>%
-  dplyr::group_by(Site, Year.Year2,Trt,Spcode)%>%
-  dplyr::summarize(mean_chng = mean(change,na.rm=T), n = n(),sd = sd(change,na.rm=T), se = sd/sqrt(n),
-                   LowerCI = mean_chng - qt(1 - (0.05 / 2), n - 1) * se,
-                   UpperCI = mean_chng + qt(1 - (0.05 / 2), n - 1) * se)%>%
-  as_tibble()
-
-drought_ACave.spp <- abunchng_allspp.ave %>% dplyr::filter(Year.Year2 %in% c("2013-2014","2013-2015","2013-2016","2013-2017"))
-
-recovery_ACave.spp <- abunchng_allspp.ave %>% dplyr::filter(Year.Year2 %in% c("2013-2018","2013-2019","2013-2020","2013-2021"))
-
-drought_ACave.spp.SGS <- drought_ACave.spp %>% dplyr::filter(Site=='SGS')
-sppchange.SGS.drt<-ggplot(subset(drought_ACave.spp.SGS, Spcode %in% c('BOGR',"VUOC","BRTE","ELEL")),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
-  xlab("Years of Treatment")+
-  facet_wrap(~Spcode)+
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
-  scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_bw()+theme(panel.grid.major = element_blank(),
-                   panel.grid.minor = element_blank(), legend.position = "top",legend.title = element_blank(),
-                   strip.text = element_text(size = 14))
-sppchange.SGS.drt
-ggsave(filename = "sppchange.SGS.drt.jpeg", plot = sppchange.SGS.drt, bg = "transparent", width =  9, height = 6, units = "in", dpi = 600)
-
-
-
-recovery_ACave.spp.SGS <- recovery_ACave.spp %>% dplyr::filter(Site=='SGS')
-sppchange.SGS.rec<-ggplot(subset(recovery_ACave.spp.SGS, Spcode %in% c('BOGR',"VUOC","BRTE","ELEL")),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
-  xlab("Years of Recovery")+
-  facet_wrap(~Spcode)+
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
-  scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_bw()+theme(panel.grid.major = element_blank(),
-                   panel.grid.minor = element_blank(), legend.position = "top",legend.title = element_blank(),
-                   strip.text = element_text(size = 14))
-sppchange.SGS.rec
-
-ggsave(filename = "sppchange.SGS.rec.jpeg", plot = sppchange.SGS.rec, bg = "transparent", width =  9, height = 6, units = "in", dpi = 600)
-
-
-sppchange.CHY.drt<-ggplot(subset(drought_ACave.spp, Site=='CHY'),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  facet_wrap(~Spcode)+
-  #scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
-  scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
-sppchange.CHY.drt
-
-sppchange.HYS.drt<-ggplot(subset(drought_ACave.spp, Site=='HYS'),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  facet_wrap(~Spcode)+
-  #scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.65))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
-  scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
-sppchange.HYS.drt
