@@ -187,33 +187,33 @@ mod.SGS$`2021_chr_vs_2021_int`[1,5]
 # SIMPER BY PERIOD 
 #SGS
 (sim<-with(SGS_wide.drt,simper(SGS.comm.drt,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 (sim<-with(SGS_wide.rec,simper(SGS.comm.rec,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 #CHY 
 
 (sim<-with(CHY_wide.drt,simper(CHY.comm.drt,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 (sim<-with(CHY_wide.rec,simper(CHY.comm.rec,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 
 #HYS
 (sim<-with(HYS_wide.drt,simper(HYS.comm.drt,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 (sim<-with(HYS_wide.rec,simper(HYS.comm.rec,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 
 #KNZ
 (sim<-with(KNZ_wide.drt,simper(KNZ.comm.drt,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 (sim<-with(KNZ_wide.rec,simper(KNZ.comm.rec,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
+summary(sim,ordered=TRUE,digits=2)
 
 

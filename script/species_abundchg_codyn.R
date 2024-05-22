@@ -91,33 +91,35 @@ abunchng_allspp.drt.ave<-abunchng_allspp.drt_trt%>%
 #drought fig 
 
 #sep by site and spp of interest based on SIMPER analysis and rename so unique for each site 
-drt.SGS <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='SGS', Spcode %in% c("46","317","55"))
-drt.SGS$Spcode <- factor(drt.SGS$Spcode, levels = c("46","317","55"),
-                              labels = c("Bouteloua gracilis","Vulpia octoflora","Carex eleocharis"))
+drt.SGS <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='SGS', Spcode %in% c("46","317","202","55","236"))
+drt.SGS$Spcode <- factor(drt.SGS$Spcode, levels = c("46","317","202","55","236"),
+                              labels = c("Bouteloua gracilis","Vulpia octoflora","Plantago patagonica","Delete",
+                                         "Delete 2"))
 
-drt.CHY <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='CHY',Spcode %in% c("46","317","197"))
-drt.CHY$Spcode <- factor(drt.CHY$Spcode, levels = c("46","317","197"),
-                         labels = c("Bouteloua gracilis","Vulpia octoflora","Pascopyrum smithii"))
+drt.CHY <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='CHY',Spcode %in% c("46","317","197","55","16"))
+drt.CHY$Spcode <- factor(drt.CHY$Spcode, levels = c("46","317","197","55","16"),
+                         labels = c("Bouteloua gracilis","Vulpia octoflora","Pascopyrum smithii","Carex eleocharis","Delete"))
 
 
-drt.HYS <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='HYS',Spcode %in% c("44","48","197","235"))
-drt.HYS$Spcode <- factor(drt.HYS$Spcode, levels = c("44","48","197","235"),
+drt.HYS <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='HYS',Spcode %in% c("44","48","197","235","46","221"))
+drt.HYS$Spcode <- factor(drt.HYS$Spcode, levels = c("44","48","197","235","46","221"),
                          labels = c("Bouteloua curtipendula","Bromus japonicus",
-                                    "Pascopyrum smithii","Sporobolus asper"))
+                                    "Pascopyrum smithii","Sporobolus asper","Bouteloua gracilis","Schizachyrium scoparium"))
 
 
-drt.KNZ <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='KNZ', Spcode %in% c("7", "221","234"))
-drt.KNZ$Spcode <- factor(drt.KNZ$Spcode, levels = c("7","221","234"),
+drt.KNZ <- abunchng_allspp.drt.ave %>% dplyr::filter(Site=='KNZ', Spcode %in% c("7", "221","234","53","60"))
+drt.KNZ$Spcode <- factor(drt.KNZ$Spcode, levels = c("7","221","234","53","60"),
                         labels = c("Andropogon gerardii","Schizachryium scoparium",
-                                   "Sorghastrum nutans"))
+                                   "Sorghastrum nutans","Delete","Delete 2"))
 
 #remerge dfs
 #drt.allsites <- rbind(drt.SGS,drt.CHY,drt.HYS,drt.KNZ)
 
 SGS_drt.fig<-ggplot(drt.SGS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
-  xlab("Years of Treatment")+
-  facet_wrap(~Spcode, scales = "free", ncol = 2)+
+  ylab("Mean change in absolute cover")+
+  xlab("Years of treatment")+
+  facet_wrap(~Spcode, scales = "free", ncol=2)+
+  geom_hline(yintercept = 0, color="grey")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.40), width=0, size=1, show.legend = TRUE)+
@@ -134,8 +136,9 @@ SGS_drt.fig<-ggplot(drt.SGS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
 SGS_drt.fig
 
 CHY_drt.fig<-ggplot(drt.CHY, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
+  ylab("Mean change in absolute cover")+
   xlab("Years of Treatment")+
+  geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Spcode, scales = "free", ncol = 2)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
@@ -153,8 +156,9 @@ CHY_drt.fig<-ggplot(drt.CHY, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
 CHY_drt.fig
 
 HYS_drt.fig<-ggplot(drt.HYS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
+  ylab("Mean change in absolute cover")+
   xlab("Years of Treatment")+
+  geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Spcode, scales = "free", ncol = 2)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
@@ -172,8 +176,9 @@ HYS_drt.fig<-ggplot(drt.HYS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
 HYS_drt.fig
 
 KNZ_drt.fig<-ggplot(drt.KNZ, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
+  ylab("Mean change in absolute cover")+
   xlab("Years of Treatment")+
+  geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Spcode, scales = "free", ncol = 2)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
@@ -190,11 +195,35 @@ KNZ_drt.fig<-ggplot(drt.KNZ, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
         panel.grid.minor = element_blank())
 KNZ_drt.fig
 
-all.drt<-ggarrange(SGS_drt.fig,CHY_drt.fig,HYS_drt.fig,KNZ_drt.fig, ncol=2,labels = c('a)', 'b)','c)','d)'))
+all.drt<-ggarrange(SGS_drt.fig,CHY_drt.fig,HYS_drt.fig,KNZ_drt.fig, ncol=2)
 all.drt
 
 ggsave(filename = "all.drt.pdf", plot = all.drt, bg = "transparent", width =  11, height = 10, units = "in", dpi = 600)
 
+
+#merged
+
+#remerge dfs
+drt.allsites <- rbind(drt.SGS,drt.CHY,drt.HYS,drt.KNZ)
+
+all_drt.fig<-ggplot(drt.allsites, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
+  ylab("Change from pretreatment")+
+  xlab("Years of Treatment")+
+  facet_wrap(Site~Spcode, scales = "free")+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=4,position=position_dodge(.40))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.40), width=0, size=1, show.legend = TRUE)+
+  scale_x_discrete(labels=c('1', '2', '3','4'))+
+  theme_bw()+ 
+  theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+        axis.text.y = element_text(size=12, color = "black"),
+        strip.text = element_text(size=12, face="italic"),
+        axis.title.x = element_text(size=14),
+        axis.title.y = element_text(size=14),
+        legend.position = "none",legend.text = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+all_drt.fig
 
 ### recovery ###
 
@@ -240,33 +269,31 @@ abunchng_allspp.rec.ave<-abunchng_allspp.rec_trt%>%
   as_tibble()
 
 
-rec.SGS <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='SGS', Spcode %in% c("49","317","95"))
-rec.SGS$Spcode <- factor(rec.SGS$Spcode, levels = c("49","317","95"),
-                         labels = c("BRJA","Vulpia octoflora", "ELEL"))
+rec.SGS <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='SGS', Spcode %in% c("49","317","95","46","55"))
+rec.SGS$Spcode <- factor(rec.SGS$Spcode, levels = c("49","317","95","46","55"),
+                         labels = c("Bromus tectorum","Vulpia octoflora","Elymus elymoides","Bouteloua gracilis","Delete"))
 
-rec.CHY <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='CHY',Spcode %in% c("137","130","55","197"))
-rec.CHY$Spcode <- factor(rec.CHY$Spcode, levels = c("137","130","55","197"),
-                         labels = c("KOMA","HECO","CAEL","PASM"))
-
-
-rec.HYS <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='HYS',Spcode %in% c("235","221","5","44"))
-rec.HYS$Spcode <- factor(rec.HYS$Spcode, levels = c("235","221","5","44"),
-                         labels = c("SPAS","SCSC",
-                                    "AMPS","BOCU"))
+rec.CHY <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='CHY',Spcode %in% c("137","130","55","197","317"))
+rec.CHY$Spcode <- factor(rec.CHY$Spcode, levels = c("137","130","55","197","317"),
+                         labels = c("Koeleria macrantha","Hesperostrip comata","Carex eleocharis","Pascopyrum smithii","Delete"))
 
 
-rec.KNZ <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='KNZ', Spcode %in% c("7", "221","234","5"))
-rec.KNZ$Spcode <- factor(rec.KNZ$Spcode, levels = c("7","221","234","5"),
+rec.HYS <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='HYS',Spcode %in% c("235","221","44","48","5"))
+rec.HYS$Spcode <- factor(rec.HYS$Spcode, levels = c("235","221","44","48","5"),
+                         labels = c("Sporobolus asper","Schizachyrium scoparium",
+                                    "Bouteloua curtipendula","Bouteloua gracilis","Delete"))
+
+
+rec.KNZ <- abunchng_allspp.rec.ave %>% dplyr::filter(Site=='KNZ', Spcode %in% c("7", "221","234","5","6"))
+rec.KNZ$Spcode <- factor(rec.KNZ$Spcode, levels = c("7","221","234","5","6"),
                          labels = c("Andropogon gerardii","Schizachryium scoparium",
-                                    "Sporobolus asper","AMPS"))
-
-#remerge dfs
-#rec.allsites <- rbind(rec.SGS,rec.CHY,rec.HYS,rec.KNZ)
+                                    "Sorghastrum nutans","Ambrosia psilostachya","Delete"))
 
 SGS_rec.fig<-ggplot(rec.SGS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
+  ylab("Mean change in absolute cover")+
   xlab("Years of Treatment")+
-  facet_wrap(~Spcode, scales = "free", ncol = 2)+
+  geom_hline(yintercept = 0, color="grey")+
+  facet_wrap(~Spcode, scales = "free", nrow = 3)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.40), width=0, size=1, show.legend = TRUE)+
@@ -283,8 +310,9 @@ SGS_rec.fig<-ggplot(rec.SGS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
 SGS_rec.fig
 
 CHY_rec.fig<-ggplot(rec.CHY, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
+  ylab("Mean change in absolute cover")+
   xlab("Years of Treatment")+
+  geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Spcode, scales = "free", ncol = 2)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
@@ -302,8 +330,9 @@ CHY_rec.fig<-ggplot(rec.CHY, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
 CHY_rec.fig
 
 HYS_rec.fig<-ggplot(rec.HYS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
+  ylab("Mean change in absolute cover")+
   xlab("Years of Treatment")+
+  geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Spcode, scales = "free", ncol = 2)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
@@ -315,14 +344,15 @@ HYS_rec.fig<-ggplot(rec.HYS, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
         strip.text = element_text(size=12, face="italic"),
         axis.title.x = element_text(size=14),
         axis.title.y = element_text(size=14),
-        legend.position = "none",legend.text = element_blank(),
+        legend.position = "top",legend.text = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 HYS_rec.fig
 
 KNZ_rec.fig<-ggplot(rec.KNZ, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
-  ylab("Change from pretreatment")+
+  ylab("Mean change in absolute cover")+
   xlab("Years of Treatment")+
+  geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Spcode, scales = "free", ncol = 2)+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.40))+
@@ -339,7 +369,7 @@ KNZ_rec.fig<-ggplot(rec.KNZ, aes(x=Year.Year2 , y=mean_chng,color=Trt))+
         panel.grid.minor = element_blank())
 KNZ_rec.fig
 
-all.rec<-ggarrange(SGS_rec.fig,CHY_rec.fig,HYS_rec.fig,KNZ_rec.fig, ncol=2,labels = c('a)', 'b)','c)','d)'))
+all.rec<-ggarrange(SGS_rec.fig,CHY_rec.fig,HYS_rec.fig,KNZ_rec.fig, ncol=2)
 all.rec
 
 ggsave(filename = "all.rec.pdf", plot = all.rec, bg = "transparent", width =  11, height = 10, units = "in", dpi = 600)
