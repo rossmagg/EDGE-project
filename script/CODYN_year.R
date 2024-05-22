@@ -93,7 +93,7 @@ Rich_RC_drought<-ggplot(subset(drought_racave,Change.type=="richness_change"),ae
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "none",legend.title = element_blank())
 Rich_RC_drought
 
 ggsave(filename = "Rich_RC_drought.jpeg", plot = Rich_RC_drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
@@ -108,7 +108,7 @@ even_RC_drought<-ggplot(subset(drought_racave,Change.type=="evenness_change"),ae
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "none",legend.title = element_blank())
 even_RC_drought
 
 ggsave(filename = "even_RC_drought.jpeg", plot = even_RC_drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
@@ -123,7 +123,7 @@ rank_RC_drought<-ggplot(subset(drought_racave,Change.type=="rank_change"),aes(x=
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "none",legend.title = element_blank())
 rank_RC_drought
 
 ggsave(filename = "rank_RC_drought.jpeg", plot = rank_RC_drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
@@ -139,7 +139,7 @@ gains_RC_drought<-ggplot(subset(drought_racave,Change.type=="gains"),aes(x=Year.
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "none",legend.title = element_blank())
 gains_RC_drought
 
 ggsave(filename = "gains_RC_drought.jpeg", plot = gains_RC_drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
@@ -154,7 +154,7 @@ losses_RC_drought<-ggplot(subset(drought_racave,Change.type=="losses"),aes(x=Yea
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "none",legend.title = element_blank())
 losses_RC_drought
 
 ggsave(filename = "losses_RC_drought.jpeg", plot = losses_RC_drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
@@ -501,7 +501,7 @@ C3_AC_Drought<-ggplot(subset(drought_ACave,Path=="C3"),aes(x=Year.Year2 , y=mean
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "none",legend.title = element_blank())
 C3_AC_Drought
 
 ggsave(filename = "C3_AC_Drought.jpeg", plot = C3_AC_Drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
@@ -517,11 +517,19 @@ C4_AC_Drought<-ggplot(subset(drought_ACave,Path=="C4"),aes(x=Year.Year2 , y=mean
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
+  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "none",legend.title = element_blank())
 C4_AC_Drought
 
 ggsave(filename = "C4_AC_Drought.jpeg", plot = C4_AC_Drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
 
+
+
+### fig with all metrics ###
+
+all.drt_mixed <-ggarrange(Rich_RC_drought, even_RC_drought, rank_RC_drought,gains_RC_drought,
+                          losses_RC_drought, C3_AC_Drought, C4_AC_Drought)
+all.drt_mixed
+ggsave(filename = "all.drt_mixed.jpeg", plot = all.drt_mixed, bg = "transparent", width =  10, height = 10, units = "in", dpi = 600)
 
 ## C3 and C4 aves not by year 
 

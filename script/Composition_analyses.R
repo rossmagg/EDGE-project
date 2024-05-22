@@ -115,7 +115,7 @@ factor.rec.KNZ<-KNZ_wide.rec[,1:5]
 factor.rec.HYS<-HYS_wide.rec[,1:5]
 factor.rec.SGS<-SGS_wide.rec[,1:5]
 
-#Pairwise comparisons 
+#Pairwise comparisons for each site, no interation 
 
 pairwise.adonis2(CHY.comm.drt~Trt, data=factor.drt.CHY, sim.method="bray",p.adjust.m = "bonferroni")
 pairwise.adonis2(CHY.comm.rec~Trt, data=factor.rec.CHY, sim.method="bray",p.adjust.m = "bonferroni")
@@ -133,7 +133,7 @@ pairwise.adonis2(SGS.comm.rec~Trt, data=factor.rec.SGS, sim.method="bray",p.adju
 perm <- how(nperm = 999)
 setBlocks(perm) <- with(factor.drt.SGS, factor.drt.SGS$plot)#this is a workaround to essentially include plot as a random effect in the permanovas
 factor.drt.SGS <- unite(factor.drt.SGS, comb, c("Year", "Trt"), remove = FALSE)
-mod.SGS <- pairwise.adonis2(SGS.comm.drt~comb, data=factor.SGS, sim.method="bray",p.adjust.m = "bonferroni", permutations = perm)
+mod.SGS <- pairwise.adonis2(SGS.comm.drt~comb, data=factor.drt.SGS, sim.method="bray",p.adjust.m = "bonferroni", permutations = perm)
 
 #Drought 
 #2013
@@ -184,229 +184,36 @@ mod.SGS$`2021_chr_vs_2021_int`[1,5]
 ####SIMPER####
 ##############
 
-#all years model
+# SIMPER BY PERIOD 
 #SGS
-#sig trt yrs: 2015-2021 
-sgswide_sigyrs <- SGS_wide %>%
-  dplyr::filter(Year %in% c(2015,2016,2017,2018,2019,2020,2021)) 
+(sim<-with(SGS_wide.drt,simper(SGS.comm.drt,Trt))) 
+summary(sim,ordered=TRUE,digits=3)
 
-SGS.comm_sigyrs<-sgswide_sigyrs[,6:49]
-
-(sim<-with(sgswide_sigyrs,simper(SGS.comm_sigyrs,Trt))) 
+(sim<-with(SGS_wide.rec,simper(SGS.comm.rec,Trt))) 
 summary(sim,ordered=TRUE,digits=3)
 
 #CHY 
-#sig trt yrs: 2014-2021
 
-chywide_sigyrs <- CHY_wide %>%
-  dplyr::filter(Year %in% c(2015,2016,2017,2018,2019,2020,2021)) 
-
-CHY.comm_sigyrs<-chywide_sigyrs[,6:76]
-
-(sim<-with(chywide_sigyrs,simper(CHY.comm_sigyrs,Trt))) 
+(sim<-with(CHY_wide.drt,simper(CHY.comm.drt,Trt))) 
 summary(sim,ordered=TRUE,digits=3)
+
+(sim<-with(CHY_wide.rec,simper(CHY.comm.rec,Trt))) 
+summary(sim,ordered=TRUE,digits=3)
+
 
 #HYS
-#sig trt yrs: 2015-2019
-hyswide_sigyrs <- HYS_wide %>%
-  dplyr::filter(Year %in% c(2015,2016,2017,2018,2019)) 
-
-HYS.comm_sigyrs<-hyswide_sigyrs[,6:91]
-
-(sim<-with(hyswide_sigyrs,simper(HYS.comm_sigyrs,Trt))) 
+(sim<-with(HYS_wide.drt,simper(HYS.comm.drt,Trt))) 
 summary(sim,ordered=TRUE,digits=3)
+
+(sim<-with(HYS_wide.rec,simper(HYS.comm.rec,Trt))) 
+summary(sim,ordered=TRUE,digits=3)
+
 
 #KNZ
-#sig trt years: 2016-2018, 2020-2021
-knzwide_sigyrs <- KNZ_wide %>%
-  dplyr::filter(Year %in% c(2016,2017,2018,2020,2021)) 
-
-KNZ.comm_sigyrs<-knzwide_sigyrs[,6:65]
-(sim<-with(knzwide_sigyrs,simper(KNZ.comm_sigyrs,Trt))) 
+(sim<-with(KNZ_wide.drt,simper(KNZ.comm.drt,Trt))) 
 summary(sim,ordered=TRUE,digits=3)
 
-### drought model SIMPER ###
-#all years model
-#SGS
-#sig trt yrs: 2015-2021 
-sgswide_sigyrs <- SGS_wide %>%
-  dplyr::filter(Year %in% c(2015,2016,2017,2018,2019,2020,2021)) 
-
-SGS.comm_sigyrs<-sgswide_sigyrs[,6:49]
-
-(sim<-with(sgswide_sigyrs,simper(SGS.comm_sigyrs,Trt))) 
+(sim<-with(KNZ_wide.rec,simper(KNZ.comm.rec,Trt))) 
 summary(sim,ordered=TRUE,digits=3)
 
-#CHY 
-#sig trt yrs: 2014-2021
-
-chywide_sigyrs <- CHY_wide %>%
-  dplyr::filter(Year %in% c(2015,2016,2017,2018,2019,2020,2021)) 
-
-CHY.comm_sigyrs<-chywide_sigyrs[,6:76]
-
-(sim<-with(chywide_sigyrs,simper(CHY.comm_sigyrs,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
-
-#HYS
-#sig trt yrs: 2015-2019
-hyswide_sigyrs <- HYS_wide %>%
-  dplyr::filter(Year %in% c(2015,2016,2017,2018,2019)) 
-
-HYS.comm_sigyrs<-hyswide_sigyrs[,6:91]
-
-(sim<-with(hyswide_sigyrs,simper(HYS.comm_sigyrs,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
-
-#KNZ
-#sig trt years: 2016-2018, 2020-2021
-knzwide_sigyrs <- KNZ_wide %>%
-  dplyr::filter(Year %in% c(2016,2017,2018,2020,2021)) 
-
-KNZ.comm_sigyrs<-knzwide_sigyrs[,6:65]
-(sim<-with(knzwide_sigyrs,simper(KNZ.comm_sigyrs,Trt))) 
-summary(sim,ordered=TRUE,digits=3)
-
-########### NMDS PANEL FIGS ##############
-
-#NMDS 
-CHY.mds<-metaMDS(CHY.comm, distance = "bray", k = 3, maxit = 999, trymax = 500)
-KNZ.mds<-metaMDS(KNZ.comm, distance = "bray", k = 3, maxit = 999, trymax = 500)
-HYS.mds<-metaMDS(HYS.comm, distance = "bray", k = 3, maxit = 999, trymax = 500)
-SGS.mds<-metaMDS(SGS.comm, distance = "bray", k = 3, maxit = 999, trymax = 500)
-
-plot(CHY.mds$points)
-plot(KNZ.mds$points)
-plot(HYS.mds$points)
-plot(SGS.mds$points)
-
-
-CHY.mds_xy<- data.frame(CHY.mds$points)
-CHY.mds_xy$Site <- CHY_wide$Site
-CHY.mds_xy$Year <- CHY_wide$Year
-CHY.mds_xy$Plot <- CHY_wide$Plot
-CHY.mds_xy$Trt <- CHY_wide$Trt
-#CHY.mds_xy$Block <- CHYcomm_wide$Block
-
-KNZ.mds_xy<- data.frame(KNZ.mds$points)
-KNZ.mds_xy$Site <- KNZ_wide$Site
-KNZ.mds_xy$Year <- KNZ_wide$Year
-KNZ.mds_xy$Plot <- KNZ_wide$Plot
-KNZ.mds_xy$Trt <- KNZ_wide$Trt
-#KNZ.mds_xy$Block <- KNZcomm_wide$Block
-
-HYS.mds_xy<- data.frame(HYS.mds$points)
-HYS.mds_xy$Site <- HYS_wide$Site
-HYS.mds_xy$Year <- HYS_wide$Year
-HYS.mds_xy$Plot <- HYS_wide$Plot
-HYS.mds_xy$Trt <- HYS_wide$Trt
-#HYS.mds_xy$Block <- HYScomm_wide$Block
-
-SGS.mds_xy<- data.frame(SGS.mds$points)
-SGS.mds_xy$Site <- SGS_wide$Site
-SGS.mds_xy$Year <- SGS_wide$Year
-SGS.mds_xy$Plot <- SGS_wide$Plot
-SGS.mds_xy$Trt <- SGS_wide$Trt
-#SGS.mds_xy$Block <- SGScomm_wide$Block
-
-allNMDS<- rbind(SGS.mds_xy, CHY.mds_xy,HYS.mds_xy,KNZ.mds_xy)
-allNMDS$Trt <- factor(allNMDS$Trt, levels=c('con', 'chr', 'int'))
-allNMDS$Site <- factor(allNMDS$Site, levels=c('SGS', 'CHY', 'HYS','KNZ'))
-
-#all sites panel 
-
-NMDS_all<-ggplot(subset(allNMDS,Year %in% c("2013","2017","2021")), aes(x=MDS1, y=MDS2, color=Trt,shape=Trt)) + 
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Chronic", "Control","Intense"))+
-  scale_shape_manual(name="Treatment",values=c(16,18,15),labels = c("Chronic", "Control","Intense"))+
-  facet_grid(Site~Year, scales = 'free_y')+
-  geom_point(size=3)+
-  stat_ellipse(show.legend = FALSE)+
-  theme_bw()+theme(panel.grid.major = element_blank(),
-                   panel.grid.minor = element_blank(), legend.position = "top",legend.title = element_blank(),
-                   strip.text = element_text(size = 14))
-NMDS_all
-ggsave(filename = "NMDS_all.jpeg", plot = NMDS_all, bg = "transparent", width =  9, height = 6, units = "in", dpi = 600)
-
-#sgs
-
-NMDS_SGS<-ggplot(subset(SGS.mds_xy,Year %in% c("2013","2017","2021")), aes(x=MDS1, y=MDS3, color=Trt,shape=Trt)) + 
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Chronic", "Control","Intense"))+
-  scale_shape_manual(name="Treatment",values=c(16,18,15),labels = c("Chronic", "Control","Intense"))+
-  ggtitle("a) SGS")+
-  facet_wrap(~Year, ncol = 3, scales = 'free_y')+
-  geom_point(size=3)+
-  stat_ellipse(show.legend = FALSE)+
-  #scale_x_continuous(breaks = c(-1.25,0,1.25),limits = c(-1.30,1.25))+
-  scale_y_continuous(breaks = c(-1.0,0,1.0),expand = c(0, 0), limits = c(-1.0,1.25))+
-  theme_classic()+
-  theme(legend.position = "none",legend.title = element_blank(),panel.grid.major = element_blank(),
-        axis.title.x = element_blank(),axis.title.y = element_blank(),
-        plot.title = element_text(size=20),
-        axis.text.y=element_text(size=11, color="black"),
-        axis.text.x=element_text(size=11, color="black"), 
-        strip.background = element_rect(fill = "lightgrey"),strip.text = element_text(size = 16),
-        panel.background = element_blank())
-NMDS_SGS
-
-#CHY
-NMDS_CHY<-ggplot(subset(CHY.mds_xy,Year %in% c("2013","2017","2021")), aes(x=MDS1, y=MDS3, color=Trt,shape=Trt)) + 
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Chronic", "Control","Intense"))+
-  scale_shape_manual(name="Treatment",values=c(16,18,15),labels = c("Chronic", "Control","Intense"))+
-  ggtitle("b) HPG")+
-  facet_wrap(~Year, ncol=3,scales = 'free_y')+
-  geom_point(size=3)+
-  stat_ellipse(show.legend = FALSE)+
-  #scale_x_continuous(breaks = c(-1.25,0,1.25),limits = c(-1.25,1.25))+
-  scale_y_continuous(breaks = c(-1.0,0,1.0),expand = c(0, 0), limits = c(-1.25,1.30))+  
-  theme_classic()+
-  theme(legend.position = "none",legend.title = element_blank(),panel.grid.major = element_blank(),
-        axis.title.x = element_blank(),axis.title.y = element_blank(),
-        plot.title = element_text(size=20),
-        axis.text.y=element_text(size=11, color="black"),
-        axis.text.x=element_text(size=11, color="black"),strip.background = element_blank(),strip.text = element_blank(),
-        panel.background = element_blank())
-NMDS_CHY
-
-#HYS
-NMDS_HYS<-ggplot(subset(HYS.mds_xy,Year %in% c("2013","2017","2021")), aes(x=MDS1, y=MDS3, color=Trt,shape=Trt)) + 
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Chronic", "Control","Intense"))+
-  scale_shape_manual(name="Treatment",values=c(16,18,15),labels = c("Chronic", "Control","Intense"))+
-  ggtitle("c) HYS")+
-  facet_wrap(~Year, ncol=3, scales = 'free_y')+
-  geom_point(size=3)+
-  stat_ellipse(show.legend = FALSE)+
-  #scale_x_continuous(breaks = c(-1.0,0,1.0),limits = c(-1.0,1.0))+
-  scale_y_continuous(breaks = c(-1.0,0,1.0),expand = c(0, 0), limits = c(-1.25,1.30))+
-  theme_classic()+
-  theme(legend.position = "none",legend.title = element_blank(),panel.grid.major = element_blank(),
-        axis.title.x = element_blank(),axis.title.y = element_blank(),
-        plot.title = element_text(size=20),
-        axis.text.y=element_text(size=11, color="black"),
-        axis.text.x=element_text(size=11, color="black"),strip.background = element_blank(),strip.text = element_blank(),
-        panel.background = element_blank())
-NMDS_HYS
-
-#KNZ
-NMDS_KNZ<-ggplot(subset(KNZ.mds_xy,Year %in% c("2013","2017","2021")), aes(x=MDS1, y=MDS3, color=Trt,shape=Trt)) + 
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Chronic", "Control","Intense"))+
-  scale_shape_manual(name="Treatment",values=c(16,18,15),labels = c("Chronic", "Control","Intense"))+
-  ggtitle("d) KNZ")+
-  facet_wrap(~Year, ncol=3, scales = 'free_y')+
-  geom_point(size=3)+
-  stat_ellipse(show.legend = FALSE)+
-  #scale_x_continuous(breaks = c(-1.0,0,1.0),limits = c(-1.0,1.0))+
-  scale_y_continuous(breaks = c(-1.0,0,1.0),expand = c(0, 0), limits = c(-1.25,1.30))+
-  theme_classic()+
-  theme(legend.position = "none",legend.title = element_blank(),panel.grid.major = element_blank(),
-        axis.title.x = element_blank(),axis.title.y = element_blank(),
-        plot.title = element_text(size=20),
-        axis.text.y=element_text(size=11, color="black"),
-        axis.text.x=element_text(size=11, color="black"),strip.background = element_blank(),strip.text = element_blank(),
-        panel.background = element_blank())
-NMDS_KNZ
-
-NMDS_panel_2<-ggarrange(NMDS_SGS,NMDS_CHY,NMDS_HYS,NMDS_KNZ, ncol=1, nrow=4, heights = c(1.11,1,1,1))
-NMDS_panel_2
-
-ggsave(filename = "NMDS_panel_2.pdf", plot = NMDS_panel_2, bg = "transparent", width =  9, height = 6, units = "in", dpi = 600)
 
