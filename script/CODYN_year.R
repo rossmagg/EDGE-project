@@ -15,12 +15,7 @@ library(lmerTest)
 library(MuMIn)
 library(AICcmodavg)
 
-#DOWNLOADING PAIRWISE ADONIS
-#install.packages("devtools")
-library(devtools)
 
-#remotes::install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis")
-library(pairwiseAdonis)
 
 spcomp_long.final<-read.csv("data/spdata.plot_names.csv")
 
@@ -72,6 +67,9 @@ racave<-racchangetrt.long%>%
                    UpperCI = mean_change + qt(1 - (0.05 / 2), n - 1) * se)%>%
   as_tibble()
 racave$Trt <- factor(racave$Trt, levels=c('con', 'chr', 'int'))
+racave$Change.type <- factor(racave$Change.type, levels=c('richness_change','evenness_change', 'rank_change',"gains","losses"), 
+                                  labels = c("Richness","Evenness","Reordering","Sp. Gains","Sp. Losses"))
+
 
 
 #racave$Site<-as.character(racave$Site)
@@ -83,11 +81,32 @@ recovery_racave <- racave %>% dplyr::filter(Year.Year2 %in% c("2013.2018","2013.
 
 ##### wrap by site, sep by metric #######
 
+all_RC_drought<-ggplot(drought_racave,aes(x=Year.Year2 , y=mean_change,color=Trt))+
+  ylab("Change from pre-treatment")+
+  xlab("Years of Treatment")+
+  geom_hline(yintercept = 0, color="grey")+
+  facet_grid(Site~Change.type, scales = "free")+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=4,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  scale_x_discrete(labels=c('1', '2', '3','4'))+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   panel.grid.major = element_blank(), 
+                   panel.grid.minor = element_blank(),
+                   panel.background = element_blank(), 
+                   axis.text.y = element_text(size=12, color = "black"),
+                        strip.text = element_text(size=12),
+                        axis.title.x = element_text(size=14),
+                        axis.title.y = element_text(size=14),
+                        legend.position = "top")
+all_RC_drought
+
+#sep fig for each metric 
 #richness change drought 
 Rich_RC_drought<-ggplot(subset(drought_racave,Change.type=="richness_change"),aes(x=Year.Year2 , y=mean_change,color=Trt))+
   ylab("Change from pre-treatment")+
   xlab("Years of Treatment")+
-  ggtitle("richness change")+
+  ggtitle("Richness")+
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
@@ -102,7 +121,7 @@ ggsave(filename = "Rich_RC_drought.jpeg", plot = Rich_RC_drought, bg = "transpar
 even_RC_drought<-ggplot(subset(drought_racave,Change.type=="evenness_change"),aes(x=Year.Year2 , y=mean_change,color=Trt))+
   ylab("Change from pre-treatment")+
   xlab("Years of Treatment")+
-  ggtitle("evenness change")+
+  ggtitle("Evenness")+
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
@@ -117,7 +136,7 @@ ggsave(filename = "even_RC_drought.jpeg", plot = even_RC_drought, bg = "transpar
 rank_RC_drought<-ggplot(subset(drought_racave,Change.type=="rank_change"),aes(x=Year.Year2 , y=mean_change,color=Trt))+
   ylab("Change from pre-treatment")+
   xlab("Years of Treatment")+
-  ggtitle("rank change")+
+  ggtitle("Reordering")+
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
@@ -133,7 +152,7 @@ ggsave(filename = "rank_RC_drought.jpeg", plot = rank_RC_drought, bg = "transpar
 gains_RC_drought<-ggplot(subset(drought_racave,Change.type=="gains"),aes(x=Year.Year2 , y=mean_change,color=Trt))+
   ylab("Change from pre-treatment")+
   xlab("Years of Treatment")+
-  ggtitle("gains")+
+  ggtitle("Gains")+
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
@@ -148,7 +167,7 @@ ggsave(filename = "gains_RC_drought.jpeg", plot = gains_RC_drought, bg = "transp
 losses_RC_drought<-ggplot(subset(drought_racave,Change.type=="losses"),aes(x=Year.Year2 , y=mean_change,color=Trt))+
   ylab("Change from pre-treatment")+
   xlab("Years of Treatment")+
-  ggtitle("losses")+
+  ggtitle("Losses")+
   facet_wrap(~Site,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
@@ -159,31 +178,7 @@ losses_RC_drought
 
 ggsave(filename = "losses_RC_drought.jpeg", plot = losses_RC_drought, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
 
-## figure with average change ##
-
-racchangetrt.long_drought <- racchangetrt.long %>% dplyr::filter(Year.Year2 %in% c("2013.2014","2013.2015","2013.2016","2013.2017"))
-
-racave_ave<-racchangetrt.long_drought%>%
-  dplyr::group_by(Site,Trt,Change.type)%>%
-  dplyr::summarize(mean_change = mean(Value,na.rm=T), n = n(),sd = sd(Value,na.rm=T), se = sd/sqrt(n),
-                   LowerCI = mean_change - qt(1 - (0.05 / 2), n - 1) * se,
-                   UpperCI = mean_change + qt(1 - (0.05 / 2), n - 1) * se)%>%
-  as_tibble()
-racave_ave$Trt <- factor(racave_ave$Trt, levels=c('con', 'chr', 'int'))
-
-
-Drought_RACave_fig<-ggplot(racave_ave, aes(x=Site, y=mean_change,color=Trt))+
-  ylab("Mean change")+
-  xlab("Site")+
-  facet_wrap(~Change.type,strip.position="top",labeller = label_wrap_gen(width = 2, multi_line = TRUE), scales = "free")+
-  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
-  geom_point(size=4,position=position_dodge(.45))+
-  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.45), width=0, size=1, show.legend = TRUE)+
-  scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"), legend.position = "top",legend.title = element_blank())
-Drought_RACave_fig
-ggsave(filename = "Drought_RACave_fig.jpeg", plot = Drought_RACave_fig, bg = "transparent", width =  10, height = 6, units = "in", dpi = 600)
-
+RAC_change_year <- ggarrange(Rich_RC_drought, even_RC_drought, rank_RC_drought, gains_RC_drought,losses_RC_drought)
 
 ########### RAC change recovery compared to 2017 ##############
 sites<-unique(spcomp_long.final$Site)

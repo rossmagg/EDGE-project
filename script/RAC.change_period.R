@@ -73,7 +73,7 @@ RAC_drt_ave$Change.type <- factor(RAC_drt_ave$Change.type, levels=c('richness_ch
 
 #figure
 RAC_drt_fig<-ggplot(RAC_drt_ave, aes(x=Site, y=mean_change,color=Trt))+
-  ylab("Average change during drought")+
+  ylab("Mean change during drought")+
   xlab("Site")+
   geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Change.type, scales = "free", ncol = 2)+
@@ -81,7 +81,7 @@ RAC_drt_fig<-ggplot(RAC_drt_ave, aes(x=Site, y=mean_change,color=Trt))+
   geom_point(size=4,position=position_dodge(.40))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.40), width=0, linewidth=1.25, show.legend = TRUE)+
   scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
                         axis.text.y = element_text(size=12, color = "black"),
                         strip.text = element_text(size=12),
                         axis.title.x = element_text(size=14),
@@ -133,7 +133,7 @@ RAC_rec_ave$Change.type <- factor(RAC_rec_ave$Change.type, levels=c('richness_ch
                                   labels = c("Richness","Evenness","Reordering","Sp. Gains","Sp. Losses"))
 
 RAC_rec_fig<-ggplot(RAC_rec_ave, aes(x=Site, y=mean_change,color=Trt))+
-  ylab("Average change during recovery")+
+  ylab("Mean change during recovery")+
   xlab("Site")+
   geom_hline(yintercept = 0, color="grey")+
   facet_wrap(~Change.type, scales = "free", ncol = 2)+
@@ -141,7 +141,7 @@ RAC_rec_fig<-ggplot(RAC_rec_ave, aes(x=Site, y=mean_change,color=Trt))+
   geom_point(size=4,position=position_dodge(.40))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.40), width=0, linewidth=1.25, show.legend = TRUE)+
   scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
-  theme_classic()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
                         axis.text.y = element_text(size=12, color = "black"),
                         strip.text = element_text(size=12),
                         axis.title.x = element_text(size=14),
