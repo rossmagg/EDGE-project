@@ -150,7 +150,7 @@ path_drt_fig<-ggplot(path_drt_ave, aes(x=Site, y=mean_change,color=Trt))+
                         panel.grid.major = element_blank(),
                         panel.grid.minor = element_blank())
 path_drt_fig
-ggsave(filename = "path_drt_fig.pdf", plot = path_drt_fig, bg = "transparent", width =  6, height = 9, units = "in", dpi = 600)
+ggsave(filename = "path_drt_fig.pdf", plot = path_drt_fig, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
 
 #### C3C4 change during recovery, compared to 2017 ####
 
@@ -214,5 +214,5 @@ path_rec_fig<-ggplot(path_rec_ave, aes(x=Site, y=mean_change,color=Trt))+
                         panel.grid.major = element_blank(),
                         panel.grid.minor = element_blank())
 path_rec_fig
-ggsave(filename = "path_rec_fig.pdf", plot = path_rec_fig, bg = "transparent", width =  6, height = 9, units = "in", dpi = 600)
+ggsave(filename = "path_rec_fig.pdf", plot = path_rec_fig, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
 
