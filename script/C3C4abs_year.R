@@ -1,4 +1,7 @@
 ## C3/C4 avg cover over time ##
+library(tidyverse)
+library(ggarrange)
+
 
 #using diff dataset for abundance. Just looking at C3/C4 
 comp_zeros <- read.csv("data/spcomp_zeros_trt.csv")
@@ -83,104 +86,285 @@ path_trt_ave<-comppath.plotsum%>%
 path_trt_ave$Trt <- factor(path_trt_ave$Trt, levels=c('con', 'chr', 'int'))
 path_trt_ave$Site <- factor(path_trt_ave$Site, levels=c('SGS', 'CHY', 'HYS','KNZ'))
 
+Drt_abs_ave <-path_trt_ave %>% dplyr::filter(Year %in% c("2014","2015","2016","2017"))
+Rec_abs_ave <- path_trt_ave %>% dplyr::filter(Year %in% c("2018","2019","2020","2021"))
 
-#figs by site 
+#fig grid drt 
 
-path_abs_SGS <- ggplot(subset(path_trt_ave, Site=="SGS"),aes(x=Year, y=ave,color=Trt))+
+Drt_path_abs_grid <- ggplot(Drt_abs_ave,aes(x=Year, y=ave,color=Trt))+
   ylab("Mean absolute cover")+
-  xlab("Year")+
-  facet_wrap(~Path, scales = "free")+
-  scale_x_discrete(labels=c('0', '1', '2','3','4','5','6','7','8'))+
+  xlab("Year of Treatment")+
+  facet_grid(Path~Site, scales = "free")+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=3,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
-                   panel.grid.major = element_blank(), 
-                   panel.grid.minor = element_blank(),
-                   panel.background = element_blank(), 
                    axis.text.y = element_text(size=12, color = "black"),
-                   strip.text = element_text(size=12),
+                   strip.text = element_text(size=14),
                    axis.title.x = element_text(size=14),
                    axis.title.y = element_text(size=14),
-                   legend.position = "none")
-path_abs_SGS
+                   legend.position = "top",
+                   legend.text = element_text(size=11),
+                   legend.title = element_text(size=11),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Drt_path_abs_grid 
+ggsave(filename = "Drt_path_abs_grid.pdf", plot = Drt_path_abs_grid, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
 
-path_abs_CHY <- ggplot(subset(path_trt_ave, Site=="CHY"),aes(x=Year, y=ave,color=Trt))+
+#fig grid recovery 
+
+Rec_path_abs_grid <- ggplot(Rec_abs_ave,aes(x=Year, y=ave,color=Trt))+
   ylab("Mean absolute cover")+
-  xlab("Year")+
-  facet_wrap(~Path, scales = "free")+
-  scale_x_discrete(labels=c('0', '1', '2','3','4','5','6','7','8'))+
+  xlab("Year of Recovery")+
+  facet_grid(Path~Site, scales = "free")+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=3,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
-                   panel.grid.major = element_blank(), 
-                   panel.grid.minor = element_blank(),
-                   panel.background = element_blank(), 
                    axis.text.y = element_text(size=12, color = "black"),
-                   strip.text = element_text(size=12),
+                   strip.text = element_text(size=14),
                    axis.title.x = element_text(size=14),
                    axis.title.y = element_text(size=14),
-                   legend.position = "none")
-path_abs_CHY
+                   legend.position = "top",
+                   legend.text = element_text(size=11),
+                   legend.title = element_text(size=11),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Rec_path_abs_grid 
+ggsave(filename = "Rec_path_abs_grid.pdf", plot = Rec_path_abs_grid, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
 
-path_abs_CHY <- ggplot(subset(path_trt_ave, Site=="CHY"),aes(x=Year, y=ave,color=Trt))+
+
+#figs by site
+
+#SGS
+Drt_path_abs_SGS <- ggplot(subset(Drt_abs_ave, Site=="SGS"),aes(x=Year, y=ave,color=Trt))+
   ylab("Mean absolute cover")+
-  xlab("Year")+
+  xlab("Year of Treatment")+
   facet_wrap(~Path, scales = "free")+
-  scale_x_discrete(labels=c('0', '1', '2','3','4','5','6','7','8'))+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=3,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
-                   panel.grid.major = element_blank(), 
-                   panel.grid.minor = element_blank(),
-                   panel.background = element_blank(), 
                    axis.text.y = element_text(size=12, color = "black"),
-                   strip.text = element_text(size=12),
+                   strip.text = element_text(size=14),
                    axis.title.x = element_text(size=14),
                    axis.title.y = element_text(size=14),
-                   legend.position = "none")
-path_abs_CHY
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Drt_path_abs_SGS
 
-path_abs_HYS <- ggplot(subset(path_trt_ave, Site=="HYS"),aes(x=Year, y=ave,color=Trt))+
+Rec_path_abs_SGS <- ggplot(subset(Rec_abs_ave, Site=="SGS"),aes(x=Year, y=ave,color=Trt))+
   ylab("Mean absolute cover")+
-  xlab("Year")+
+  xlab("Year of Recovery")+
   facet_wrap(~Path, scales = "free")+
-  scale_x_discrete(labels=c('0', '1', '2','3','4','5','6','7','8'))+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=3,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
-                   panel.grid.major = element_blank(), 
-                   panel.grid.minor = element_blank(),
-                   panel.background = element_blank(), 
                    axis.text.y = element_text(size=12, color = "black"),
-                   strip.text = element_text(size=12),
+                   strip.text = element_text(size=14),
                    axis.title.x = element_text(size=14),
                    axis.title.y = element_text(size=14),
-                   legend.position = "none")
-path_abs_HYS
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Rec_path_abs_SGS
 
-path_abs_KNZ <- ggplot(subset(path_trt_ave, Site=="KNZ"),aes(x=Year, y=ave,color=Trt))+
+#CHY
+Drt_path_abs_CHY <- ggplot(subset(Drt_abs_ave, Site=="CHY"),aes(x=Year, y=ave,color=Trt))+
   ylab("Mean absolute cover")+
-  xlab("Year")+
+  xlab("Year of Treatment")+
   facet_wrap(~Path, scales = "free")+
-  scale_x_discrete(labels=c('0', '1', '2','3','4','5','6','7','8'))+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=3,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
-                   panel.grid.major = element_blank(), 
-                   panel.grid.minor = element_blank(),
-                   panel.background = element_blank(), 
                    axis.text.y = element_text(size=12, color = "black"),
-                   strip.text = element_text(size=12),
+                   strip.text = element_text(size=14),
                    axis.title.x = element_text(size=14),
                    axis.title.y = element_text(size=14),
-                   legend.position = "none")
-path_abs_KNZ
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Drt_path_abs_CHY
 
-C3C4abs_fig <- ggarrange(path_abs_SGS, path_abs_CHY,path_abs_HYS,path_abs_KNZ)
 
-ggsave(filename = "C3C4abs_fig.jpeg", plot = C3C4abs_fig, bg = "transparent", width =  12, height = 8, units = "in", dpi = 600)
+Rec_path_abs_CHY<- ggplot(subset(Rec_abs_ave, Site=="CHY"),aes(x=Year, y=ave,color=Trt))+
+  ylab("Mean absolute cover")+
+  xlab("Year of Recovery")+
+  facet_wrap(~Path, scales = "free")+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Rec_path_abs_CHY
+
+#HYS
+Drt_path_abs_HYS<- ggplot(subset(Drt_abs_ave, Site=="HYS"),aes(x=Year, y=ave,color=Trt))+
+  ylab("Mean absolute cover")+
+  xlab("Year of Treatment")+
+  facet_wrap(~Path, scales = "free")+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Drt_path_abs_HYS
+
+Rec_path_abs_HYS<- ggplot(subset(Rec_abs_ave, Site=="HYS"),aes(x=Year, y=ave,color=Trt))+
+  ylab("Mean absolute cover")+
+  xlab("Year of Recovery")+
+  facet_wrap(~Path, scales = "free")+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Rec_path_abs_HYS
+
+#KNZ
+Drt_path_abs_KNZ<- ggplot(subset(Drt_abs_ave, Site=="KNZ"),aes(x=Year, y=ave,color=Trt))+
+  ylab("Mean absolute cover")+
+  xlab("Year of Treatment")+
+  facet_wrap(~Path, scales = "free")+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Drt_path_abs_KNZ
+
+Rec_path_abs_KNZ<- ggplot(subset(Rec_abs_ave, Site=="KNZ"),aes(x=Year, y=ave,color=Trt))+
+  ylab("Mean absolute cover")+
+  xlab("Year of Recovery")+
+  facet_wrap(~Path, scales = "free")+
+  scale_x_discrete(labels=c('1', '2','3','4'))+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "none",
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Rec_path_abs_KNZ
+
+
+Drt_path_abs <- Drt_path_abs_SGS+Drt_path_abs_CHY+Drt_path_abs_HYS+Drt_path_abs_KNZ 
+Drt_path_abs
+ggsave(filename = "Drt_path_abs.pdf", plot = Drt_path_abs, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
+
+
+Rec_path_abs<- Rec_path_abs_SGS+Rec_path_abs_CHY+Rec_path_abs_HYS+Rec_path_abs_KNZ
+Rec_path_abs
+ggsave(filename = "Rec_path_abs.pdf", plot = Rec_path_abs, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
+
+
+#### Ave ABS cover by period 
+
+#Drought period 
+comppath.plotsum_Drt <- comppath.plotsum %>% dplyr::filter(Year %in% c("2014","2015","2016","2017"))
+
+path_ave_Drt<-comppath.plotsum_Drt %>%
+  dplyr::group_by(Site,Trt,Path)%>%
+  dplyr::summarize(ave = mean(pathsum,na.rm=T), n = n(),sd = sd(pathsum,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = ave - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = ave + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+
+path_ave_Drt$Trt <- factor(path_ave_Drt$Trt, levels=c('con', 'chr', 'int'))
+path_ave_Drt$Site <- factor(path_ave_Drt$Site, levels=c('SGS', 'CHY', 'HYS','KNZ'))
+
+Drt_ave_abs<-ggplot(path_ave_Drt,aes(x=Site, y=ave,color=Trt))+
+  ylab("Mean absolute cover")+
+  xlab("Site")+
+  facet_wrap(~Path)+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                  axis.text.y = element_text(size=12, color = "black"),
+                  strip.text = element_text(size=14),
+                  axis.title.x = element_text(size=14),
+                  axis.title.y = element_text(size=14),
+                  legend.position = "top",
+                  legend.text = element_text(size=11),
+                  legend.title = element_text(size=11),
+                  panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank())
+Drt_ave_abs
+
+ggsave(filename = "Drt_ave_abs.pdf", plot = Drt_ave_abs, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
+
+#Recovery period 
+comppath.plotsum_Rec <- comppath.plotsum %>% dplyr::filter(Year %in% c("2018","2019","2020","2021"))
+
+path_ave_Rec<-comppath.plotsum_Rec %>%
+  dplyr::group_by(Site,Trt,Path)%>%
+  dplyr::summarize(ave = mean(pathsum,na.rm=T), n = n(),sd = sd(pathsum,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = ave - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = ave + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+
+path_ave_Rec$Trt <- factor(path_ave_Rec$Trt, levels=c('con', 'chr', 'int'))
+path_ave_Rec$Site <- factor(path_ave_Rec$Site, levels=c('SGS', 'CHY', 'HYS','KNZ'))
+
+Rec_ave_abs<-ggplot(path_ave_Rec,aes(x=Site, y=ave,color=Trt))+
+  ylab("Mean absolute cover")+
+  xlab("Site")+
+  facet_wrap(~Path)+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=3,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "top",
+                   legend.text = element_text(size=11),
+                   legend.title = element_text(size=11),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+Rec_ave_abs
+
+ggsave(filename = "Rec_ave_abs.pdf", plot =Rec_ave_abs, bg = "transparent", width =  8, height = 6, units = "in", dpi = 600)
+

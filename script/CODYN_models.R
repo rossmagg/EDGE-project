@@ -7,10 +7,10 @@ library(lmerTest)
 library(pbkrtest)
 library(emmeans)
 library(Matrix)
-
+library(codyn)
 #RAC change
 
-spcomp_long.final<-read.csv("C:\\Users\\Maggie Ross\\OneDrive - Colostate\\Documents\\EDGE-postgrad-pub\\postgrad_pub\\data\\spdata.plot_names.csv")
+spcomp_long.final<-read.csv("data/spdata.plot_names.csv")
 
 #Make the following items into a factor:
 spcomp_long.final<-spcomp_long.final %>% 
@@ -520,7 +520,7 @@ anova(Re17.LoC.KNZ, ddf="Kenward-Roger")
 
 ########### Abundance change models ##############
 
-comp_zeros <- read.csv("C:\\Users\\Maggie Ross\\OneDrive - Colostate\\EDGE\\data\\spcompdata_final_revised_April2022\\spcomp_zeros_trt.csv")
+comp_zeros <- read.csv("data/spcomp_zeros_trt.csv")
 comp_zeros$Species = NULL
 colnames(comp_zeros)[colnames(comp_zeros) == "max.cover"] <- "cover" 
 comp_zeros<- comp_zeros %>%
@@ -544,7 +544,7 @@ comp.wide_plot[is.na(comp.wide_plot)] <- 0
 comp.aveplot_zeros<- comp.wide_plot %>%
   pivot_longer(cols = "1":"30",names_to = "Plot", values_to = "avg.cover")
 
-trt <- read.csv("C:\\Users\\Maggie Ross\\OneDrive - Colostate\\EDGE\\data\\trt_info_2.csv")
+trt <- read.csv("data/trt_info_2.csv")
 trt<-trt %>% 
   dplyr::mutate_at(c('Site','Plot','Block','Trt'),as.factor)
 comp.aveplot_trt<- merge(trt,comp.aveplot_zeros, fix.by=c("Site", "Plot"))

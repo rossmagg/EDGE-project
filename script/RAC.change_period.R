@@ -68,8 +68,8 @@ RAC_drt_ave<-racchangetrt.long%>%
   as_tibble()
 
 RAC_drt_ave$Trt <- factor(RAC_drt_ave$Trt, levels=c('con', 'chr', 'int'))
-RAC_drt_ave$Change.type <- factor(RAC_drt_ave$Change.type, levels=c('richness_change','evenness_change', 'rank_change',"gains","losses"), 
-                                    labels = c("Richness","Evenness","Reordering","Sp. Gains","Sp. Losses"))
+RAC_drt_ave$Change.type <- factor(RAC_drt_ave$Change.type, levels=c('richness_change','evenness_change', 'losses',"gains","rank_change"), 
+                                    labels = c("Richness","Evenness","Sp. Losses","Sp. Gains","Reordering"))
 
 #figure
 RAC_drt_fig<-ggplot(RAC_drt_ave, aes(x=Site, y=mean_change,color=Trt))+
@@ -83,10 +83,12 @@ RAC_drt_fig<-ggplot(RAC_drt_ave, aes(x=Site, y=mean_change,color=Trt))+
   scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
                         axis.text.y = element_text(size=12, color = "black"),
-                        strip.text = element_text(size=12),
+                        strip.text = element_text(size=14),
                         axis.title.x = element_text(size=14),
                         axis.title.y = element_text(size=14),
                         legend.position = "top",
+                        legend.text = element_text(size=11),
+                        legend.title = element_text(size=11),
                         panel.grid.major = element_blank(),
                         panel.grid.minor = element_blank())
 RAC_drt_fig
@@ -129,8 +131,8 @@ RAC_rec_ave<-racchangetrt.long.rec%>%
   as_tibble()
 
 RAC_rec_ave$Trt <- factor(RAC_rec_ave$Trt, levels=c('con', 'chr', 'int'))
-RAC_rec_ave$Change.type <- factor(RAC_rec_ave$Change.type, levels=c('richness_change','evenness_change', 'rank_change',"gains","losses"), 
-                                  labels = c("Richness","Evenness","Reordering","Sp. Gains","Sp. Losses"))
+RAC_rec_ave$Change.type <- factor(RAC_rec_ave$Change.type, levels=c('richness_change','evenness_change', 'losses',"gains","rank_change"), 
+                                  labels = c("Richness","Evenness","Sp. Losses","Sp. Gains","Reordering"))
 
 RAC_rec_fig<-ggplot(RAC_rec_ave, aes(x=Site, y=mean_change,color=Trt))+
   ylab("Mean change during recovery")+
@@ -142,13 +144,15 @@ RAC_rec_fig<-ggplot(RAC_rec_ave, aes(x=Site, y=mean_change,color=Trt))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.40), width=0, linewidth=1.25, show.legend = TRUE)+
   scale_x_discrete(labels=c('SGS', 'HPG', 'HYS','KNZ'))+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
-                        axis.text.y = element_text(size=12, color = "black"),
-                        strip.text = element_text(size=12),
-                        axis.title.x = element_text(size=14),
-                        axis.title.y = element_text(size=14),
-                        legend.position = "top",
-                        panel.grid.major = element_blank(),
-                        panel.grid.minor = element_blank())
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "top",
+                   legend.text = element_text(size=11),
+                   legend.title = element_text(size=11),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
 RAC_rec_fig
 ggsave(filename = "RAC_rec_fig.pdf", plot = RAC_rec_fig, bg = "transparent", width =  6, height = 9, units = "in", dpi = 600)
 

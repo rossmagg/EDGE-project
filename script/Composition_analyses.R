@@ -94,15 +94,15 @@ HYS.comm.rec<-HYS_wide.rec[,6:82]
 SGS.comm.rec<-SGS_wide.rec[,6:41]
 
 #PERMANOVA
-adonis2(CHY.comm.drt~CHY_wide.drt$Year*CHY_wide.drt$Trt, method="bray", permutations=1000, Blocks(CHY_wide.drt$Block))
-adonis2(KNZ.comm.drt~KNZ_wide.drt$Year*KNZ_wide.drt$Trt, method="bray", permutations=1000, Blocks(KNZ_wide.drt$Block))
-adonis2(HYS.comm.drt~HYS_wide.drt$Year*HYS_wide.drt$Trt, method="bray", permutations=1000, Blocks(HYS_wide.drt$Block))
-adonis2(SGS.comm.drt~SGS_wide.drt$Year*SGS_wide.drt$Trt, method="bray", permutations=1000, Blocks(SGS_wide.drt$Block))
+adonis2(CHY.comm.drt~CHY_wide.drt$Trt*CHY_wide.drt$Year, method="bray", permutations=1000, Blocks(CHY_wide.drt$Block))
+adonis2(KNZ.comm.drt~KNZ_wide.drt$Trt*KNZ_wide.drt$Year, method="bray", permutations=1000, Blocks(KNZ_wide.drt$Block))
+adonis2(HYS.comm.drt~HYS_wide.drt$Trt*HYS_wide.drt$Year, method="bray", permutations=1000, Blocks(HYS_wide.drt$Block))
+adonis2(SGS.comm.drt~SGS_wide.drt$Trt*SGS_wide.drt$Year, method="bray", permutations=1000, Blocks(SGS_wide.drt$Block))
 
-adonis2(CHY.comm.rec~CHY_wide.rec$Year*CHY_wide.rec$Trt, method="bray", permutations=1000, Blocks(CHY_wide.rec$Block))
-adonis2(KNZ.comm.rec~KNZ_wide.rec$Year*KNZ_wide.rec$Trt, method="bray", permutations=1000, Blocks(KNZ_wide.rec$Block))
-adonis2(HYS.comm.rec~HYS_wide.rec$Year*HYS_wide.rec$Trt, method="bray", permutations=1000, Blocks(HYS_wide.rec$Block))
-adonis2(SGS.comm.rec~SGS_wide.rec$Year*SGS_wide.rec$Trt, method="bray", permutations=1000, Blocks(SGS_wide.rec$Block))
+adonis2(CHY.comm.rec~CHY_wide.rec$Trt*CHY_wide.rec$Year, method="bray", permutations=1000, Blocks(CHY_wide.rec$Block))
+adonis2(KNZ.comm.rec~KNZ_wide.rec$Trt*KNZ_wide.rec$Year, method="bray", permutations=1000, Blocks(KNZ_wide.rec$Block))
+adonis2(HYS.comm.rec~HYS_wide.rec$Trt*HYS_wide.rec$Year, method="bray", permutations=1000, Blocks(HYS_wide.rec$Block))
+adonis2(SGS.comm.rec~SGS_wide.rec$Trt*SGS_wide.rec$Year, method="bray", permutations=1000, Blocks(SGS_wide.rec$Block))
 
 
 factor.drt.CHY<-CHY_wide.drt[,1:5]
