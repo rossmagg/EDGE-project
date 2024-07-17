@@ -69,7 +69,7 @@ RAC_drt_ave<-racchangetrt.long%>%
 
 RAC_drt_ave$Trt <- factor(RAC_drt_ave$Trt, levels=c('con', 'chr', 'int'))
 RAC_drt_ave$Change.type <- factor(RAC_drt_ave$Change.type, levels=c('richness_change','evenness_change', 'losses',"gains","rank_change"), 
-                                    labels = c("Richness","Evenness","Sp. Losses","Sp. Gains","Reordering"))
+                                    labels = c("Richness","Evenness","Species Losses","Species Gains","Reordering"))
 
 #figure
 RAC_drt_fig<-ggplot(RAC_drt_ave, aes(x=Site, y=mean_change,color=Trt))+
@@ -132,7 +132,7 @@ RAC_rec_ave<-racchangetrt.long.rec%>%
 
 RAC_rec_ave$Trt <- factor(RAC_rec_ave$Trt, levels=c('con', 'chr', 'int'))
 RAC_rec_ave$Change.type <- factor(RAC_rec_ave$Change.type, levels=c('richness_change','evenness_change', 'losses',"gains","rank_change"), 
-                                  labels = c("Richness","Evenness","Sp. Losses","Sp. Gains","Reordering"))
+                                  labels = c("Richness","Evenness","Species Losses","Species Gains","Reordering"))
 
 RAC_rec_fig<-ggplot(RAC_rec_ave, aes(x=Site, y=mean_change,color=Trt))+
   ylab("Mean change during recovery")+

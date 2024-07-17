@@ -130,8 +130,15 @@ NMDS_all<-ggplot(subset(allNMDS,Year %in% c("2013","2017","2021")), aes(x=MDS1, 
   facet_grid(Site~Year, scales = 'free_y')+
   geom_point(size=3)+
   stat_ellipse(show.legend = FALSE)+
-  theme_bw()+theme(panel.grid.major = element_blank(),
-                   panel.grid.minor = element_blank(), legend.position = "top",
-                   strip.text = element_text(size = 14))
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "top",
+                   legend.text = element_text(size=11),
+                   legend.title = element_text(size=11),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
 NMDS_all
 ggsave(filename = "NMDS_all.jpeg", plot = NMDS_all, bg = "transparent", width =  9, height = 6, units = "in", dpi = 600)

@@ -41,6 +41,8 @@ for(i in 1:length(sites)){
 racchangetrt<- merge(racchange, plotinfo, fix.by=c("Site","Plot"))
 racchangetrt$Year.Year2<-str_c(racchangetrt$Year,'.',racchangetrt$Year2)
 
+racchangetrt$Trt <- factor(racchangetrt$Trt, levels=c('con', 'chr', 'int'))
+
 racchangetrt.drought <- racchangetrt %>% dplyr::filter(Year.Year2 %in% c("2013.2014","2013.2015","2013.2016","2013.2017"))
 
 racchangtrt.recovery <- racchangetrt %>% dplyr::filter(Year.Year2 %in% c("2013.2018","2013.2019","2013.2020","2013.2021"))
@@ -74,6 +76,7 @@ racchangetrt17<- merge(racchange17, plotinfo, fix.by=c("Site","Plot"))
 
 #Create a new column showing the year comparisons
 racchangetrt17$Year.Year2<-str_c(racchangetrt17$Year,'.',racchangetrt17$Year2)
+racchangetrt17$Trt <- factor(racchangetrt17$Trt, levels=c('con', 'chr', 'int'))
 
 ###### RAC change MODELS #####
 #### SGS ####
@@ -87,7 +90,7 @@ emmeans(RiC.SGS, pairwise ~Trt|Year.Year2)
 Dr.RiC.SGS<- lmer(richness_change~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangetrt.drought, Site=="SGS"))
 plot(Dr.RiC.SGS)
 anova(Dr.RiC.SGS, ddf="Kenward-Roger")
-emmeans(Dr.RiC.SGS, pairwise ~Trt|Year.Year2)
+emmeans(Dr.RiC.SGS, pairwise ~~Trt|Year.Year2)
 
 #rich recovery-2013
 Re.RiC.SGS<- lmer(richness_change~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangtrt.recovery, Site=="SGS"))
@@ -255,7 +258,7 @@ emmeans(Re.RaC.CHY, pairwise ~Trt|Year.Year2)
 Re17.RaC.CHY<- lmer(rank_change~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangetrt17, Site=="CHY"))
 plot(Re17.RaC.CHY)
 anova(Re17.RaC.CHY, ddf="Kenward-Roger")
-emmeans(Re17.RaC.CHY, pairwise ~Trt|Year.Year2)
+emmeans(Re17.RaC.CHY, pairwise ~Trt)
 
 #GAINS full
 GaC.CHY<- lmer(gains~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangetrt, Site=="CHY"))
@@ -362,7 +365,7 @@ emmeans(Dr.RaC.HYS, pairwise ~Trt|Year.Year2)
 Re.RaC.HYS<- lmer(rank_change~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangtrt.recovery, Site=="HYS"))
 plot(Re.RaC.HYS)
 anova(Re.RaC.HYS, ddf="Kenward-Roger")
-emmeans(Re.RaC.HYS, pairwise ~Trt|Year.Year2)
+emmeans(Re.RaC.HYS, pairwise ~Trt)
 
 #rank recovery-2017
 Re17.RaC.HYS<- lmer(rank_change~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangetrt17, Site=="HYS"))
@@ -496,7 +499,7 @@ anova(Re.GaC.KNZ, ddf="Kenward-Roger")
 Re17.GaC.KNZ<- lmer(gains~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangetrt17, Site=="KNZ"))
 plot(Re17.GaC.KNZ)
 anova(Re17.GaC.KNZ, ddf="Kenward-Roger")
-emmeans(Re17.GaC.KNZ, pairwise ~Trt|Year.Year2)
+emmeans(Re17.GaC.KNZ, pairwise ~Trt)
 
 #LOSSES
 LoC.KNZ<- lmer(losses~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(racchangetrt, Site=="KNZ"))
@@ -738,7 +741,7 @@ anova(Re.HYS.C3, ddf="Kenward-Roger")
 Re17.HYS.C3<- lmer(C3~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(abunchngtrt_wide17, Site=="HYS"))
 plot(Re17.HYS.C3)
 anova(Re17.HYS.C3, ddf="Kenward-Roger")
-emmeans(Re17.HYS.C3, pairwise ~Trt|Year.Year2)
+emmeans(Re17.HYS.C3, pairwise ~Trt)
 
 #KNZ
 #full
@@ -842,7 +845,7 @@ anova(Re.HYS.C4, ddf="Kenward-Roger")
 Re17.HYS.C4<- lmer(C4~Trt*Year.Year2+(1|Plot)+(1|Block), data = subset(abunchngtrt_wide17, Site=="HYS"))
 plot(Re17.HYS.C4)
 anova(Re17.HYS.C4, ddf="Kenward-Roger")
-emmeans(Re17.HYS.C4, pairwise ~Trt|Year.Year2)
+emmeans(Re17.HYS.C4, pairwise ~Trt)
 
 #KNZ
 #full

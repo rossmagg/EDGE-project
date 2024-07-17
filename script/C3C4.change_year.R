@@ -122,25 +122,99 @@ drought_ACave$Trt <- factor(drought_ACave$Trt, levels=c('con', 'chr', 'int'))
 
 #fig grid 
 
-all_path_drought<-ggplot(drought_ACave,aes(x=Year.Year2 , y=mean_chng,color=Trt))+
+all_path_yr.drt<-ggplot(drought_ACave,aes(x=Year.Year2 , y=mean_chng,color=Trt))+
   ylab("Change from pre-treatment")+
   xlab("Years of Treatment")+
   geom_hline(yintercept = 0, color="grey")+
-  facet_grid(Site~Path, scales = "free")+
+  facet_grid(Path~Site, scales = "free")+
   scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
   geom_point(size=4,position=position_dodge(.65))+
   geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
   scale_x_discrete(labels=c('1', '2', '3','4'))+
   theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
-                   panel.grid.major = element_blank(), 
-                   panel.grid.minor = element_blank(),
-                   panel.background = element_blank(), 
                    axis.text.y = element_text(size=12, color = "black"),
-                   strip.text = element_text(size=12),
+                   strip.text = element_text(size=14),
                    axis.title.x = element_text(size=14),
                    axis.title.y = element_text(size=14),
-                   legend.position = "top")
-all_path_drought
+                   legend.position = "top",
+                   legend.text = element_text(size=11),
+                   legend.title = element_text(size=11),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+all_path_yr.drt
+
+ggsave(filename = "all_path_yr.drt.pdf", plot = all_path_yr.drt, bg = "transparent", width =  11, height = 8, units = "in", dpi = 600)
+
+
+## C3/C4 Abundance change during recovery, compared to 2017
+
+abunchng17<-data.frame()
+#need to put in console i=1 to test if it works
+for(i in 1:length(sites)){
+  sub<-comppath.plotsum %>% 
+    filter(Site==sites[i])
+  out<-abundance_change(
+    df=sub,
+    time.var="Year",
+    species.var="Path",
+    abundance.var="pathsum",
+    replicate.var = "Plot",
+    reference.time = "2017"
+  )
+  out$Site<-sites[i]  
+  abunchng17<-rbind(abunchng17,out)
+}
+
+#Merge dataframe with trt info
+abunchngtrt17<-abunchng17 %>% 
+  left_join(plotinfo)
+
+#Create a new column showing the year comparisons
+abunchngtrt17$Year.Year2<-str_c(abunchngtrt17$Year,'-',abunchngtrt17$Year2)
+abunchngtrt17 <- abunchngtrt17 %>% dplyr::filter(Year.Year2 %in% c("2017-2018","2017-2019","2017-2020","2017-2021"))
+abunchngtrt17$Trt <- factor(abunchngtrt17$Trt, levels=c('con', 'chr', 'int'))
+
+#Average and CI by time point comparison
+
+abunchng.ave17<-abunchngtrt17%>%
+  dplyr::group_by(Site, Year.Year2,Trt,Path)%>%
+  dplyr::summarize(mean_chng = mean(change,na.rm=T), n = n(),sd = sd(change,na.rm=T), se = sd/sqrt(n),
+                   LowerCI = mean_chng - qt(1 - (0.05 / 2), n - 1) * se,
+                   UpperCI = mean_chng + qt(1 - (0.05 / 2), n - 1) * se)%>%
+  as_tibble()
+
+
+rec_ACave17 <- abunchng.ave17 %>% dplyr::filter(Year.Year2 %in% c("2017-2018","2017-2019","2017-2020","2017-2021"))
+
+rec_ACave17$Trt <- factor(rec_ACave17$Trt, levels=c('con', 'chr', 'int'))
+
+#fig grid 
+
+all_path_yr.rec<-ggplot(rec_ACave17,aes(x=Year.Year2 , y=mean_chng,color=Trt))+
+  ylab("Change from end of treatment")+
+  xlab("Years of Recovery")+
+  geom_hline(yintercept = 0, color="grey")+
+  facet_grid(Path~Site, scales = "free")+
+  scale_color_manual(name="Treatment",values=c("#56B4E9","#009E73","#E69F00"),labels = c("Control", "Chronic","Intense"))+
+  geom_point(size=4,position=position_dodge(.65))+
+  geom_errorbar(aes(ymin=LowerCI, ymax=UpperCI),position=position_dodge(.65), width=0, size=1, show.legend = TRUE)+
+  scale_x_discrete(labels=c('1', '2', '3','4'))+
+  theme_bw()+theme(strip.background =element_rect(fill="lightgrey"),axis.text.x = element_text(size=12, color="black"),
+                   axis.text.y = element_text(size=12, color = "black"),
+                   strip.text = element_text(size=14),
+                   axis.title.x = element_text(size=14),
+                   axis.title.y = element_text(size=14),
+                   legend.position = "top",
+                   legend.text = element_text(size=11),
+                   legend.title = element_text(size=11),
+                   panel.grid.major = element_blank(),
+                   panel.grid.minor = element_blank())
+all_path_yr.rec
+
+ggsave(filename = "all_path_yr.rec.pdf", plot = all_path_yr.rec, bg = "transparent", width =  11, height = 8, units = "in", dpi = 600)
+
+
+### code can be deleted below ###
 
 #figs by site so scales are free for each path by site 
 SGS_path_drt <- ggplot(subset(drought_ACave,Site=="SGS"),aes(x=Year.Year2 , y=mean_chng,color=Trt))+
@@ -225,49 +299,6 @@ KNZ_path_drt <- ggplot(subset(drought_ACave,Site=="KNZ"),aes(x=Year.Year2 , y=me
 KNZ_path_drt 
 
 all_path_drt_yr <- ggarrange(SGS_path_drt,CHY_path_drt,HYS_path_drt,KNZ_path_drt)
-
-ggsave(filename = "all_path_drt_yr.pdf", plot = all_path_drt_yr, bg = "transparent", width =  11, height = 8, units = "in", dpi = 600)
-
-
-## C3/C4 Abundance change during recovery, compared to 2017
-
-abunchng17<-data.frame()
-#need to put in console i=1 to test if it works
-for(i in 1:length(sites)){
-  sub<-comppath.plotsum %>% 
-    filter(Site==sites[i])
-  out<-abundance_change(
-    df=sub,
-    time.var="Year",
-    species.var="Path",
-    abundance.var="pathsum",
-    replicate.var = "Plot",
-    reference.time = "2017"
-  )
-  out$Site<-sites[i]  
-  abunchng17<-rbind(abunchng17,out)
-}
-
-#Merge dataframe with trt info
-abunchngtrt17<-abunchng17 %>% 
-  left_join(plotinfo)
-
-#Create a new column showing the year comparisons
-abunchngtrt17$Year.Year2<-str_c(abunchngtrt17$Year,'-',abunchngtrt17$Year2)
-abunchngtrt17 <- abunchngtrt17 %>% dplyr::filter(Year.Year2 %in% c("2017-2018","2017-2019","2017-2020","2017-2021"))
-abunchngtrt17$Trt <- factor(abunchngtrt17$Trt, levels=c('con', 'chr', 'int'))
-
-#Average and CI by time point comparison
-
-abunchng.ave17<-abunchngtrt17%>%
-  dplyr::group_by(Site, Year.Year2,Trt,Path)%>%
-  dplyr::summarize(mean_chng = mean(change,na.rm=T), n = n(),sd = sd(change,na.rm=T), se = sd/sqrt(n),
-                   LowerCI = mean_chng - qt(1 - (0.05 / 2), n - 1) * se,
-                   UpperCI = mean_chng + qt(1 - (0.05 / 2), n - 1) * se)%>%
-  as_tibble()
-
-
-rec_ACave17 <- abunchng.ave17 %>% dplyr::filter(Year.Year2 %in% c("2017-2018","2017-2019","2017-2020","2017-2021"))
 
 #figs by site 
 
@@ -354,3 +385,4 @@ KNZ_path_rec
 all_path_rec_yr <- ggarrange(SGS_path_rec,CHY_path_rec,HYS_path_rec,KNZ_path_rec)
 
 ggsave(filename = "all_path_rec_yr.pdf", plot = all_path_rec_yr, bg = "transparent", width =  11, height = 8, units = "in", dpi = 600)
+
